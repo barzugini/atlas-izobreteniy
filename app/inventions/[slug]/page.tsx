@@ -28,6 +28,13 @@ export default async function InventionPage({ params }: { params: Promise<{ slug
   const category = categories[item.categoryIndex];
   const branch = category.branches[item.branchIndex];
   const code = `${category.number}.${item.branchIndex + 1}.${String(item.itemIndex + 1).padStart(2, "0")}`;
+  const branchPages = inventions
+    .filter((candidate) => candidate.categoryIndex === item.categoryIndex && candidate.branchIndex === item.branchIndex)
+    .sort((a, b) => a.itemIndex - b.itemIndex);
+  const pageIndex = branchPages.findIndex((candidate) => candidate.slug === item.slug);
+  const previousPage = pageIndex > 0 ? branchPages[pageIndex - 1] : undefined;
+  const nextPage = pageIndex < branchPages.length - 1 ? branchPages[pageIndex + 1] : undefined;
+  const nextPlannedTitle = branch.items[item.itemIndex + 1];
 
   return (
     <main className={styles.page}>
@@ -47,8 +54,8 @@ export default async function InventionPage({ params }: { params: Promise<{ slug
         <div className={styles.fireMark} aria-hidden="true">
           <span className={styles.fireOrbitOne} />
           <span className={styles.fireOrbitTwo} />
-          <span className={styles.fireCore}>☼</span>
-          <b>01</b>
+          <span className={styles.fireCore}>{item.symbol}</span>
+          <b>{String(item.itemIndex + 1).padStart(2, "0")}</b>
         </div>
 
         <dl className={styles.facts}>
@@ -59,13 +66,13 @@ export default async function InventionPage({ params }: { params: Promise<{ slug
       </section>
 
       <section className={styles.articleSection}>
-        <p className={styles.sectionNumber}>01</p>
-        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Суть изменения</p><h2>Природная сила стала инструментом</h2></div>
+        <p className={styles.sectionNumber}>{String(item.itemIndex + 1).padStart(2, "0")}</p>
+        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Суть изменения</p><h2>{item.changeTitle}</h2></div>
         <div className={styles.prose}>{item.overview.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
       </section>
 
       <section className={styles.impactSection}>
-        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Последствия</p><h2>Что изменил огонь</h2></div>
+        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Последствия</p><h2>{item.impactsTitle}</h2></div>
         <div className={styles.impactGrid}>
           {item.impacts.map((impact, index) => (
             <article key={impact.title}><span>0{index + 1}</span><h3>{impact.title}</h3><p>{impact.text}</p></article>
@@ -74,7 +81,7 @@ export default async function InventionPage({ params }: { params: Promise<{ slug
       </section>
 
       <section className={styles.evidenceSection}>
-        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Археологические свидетельства</p><h2>Что мы действительно знаем</h2></div>
+        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Археологические свидетельства</p><h2>{item.evidenceTitle}</h2></div>
         <div className={styles.timeline}>
           {item.evidence.map((entry) => (
             <article key={entry.title}><time>{entry.date}</time><div><h3>{entry.title}</h3><p>{entry.text}</p></div></article>
@@ -83,7 +90,7 @@ export default async function InventionPage({ params }: { params: Promise<{ slug
       </section>
 
       <section className={styles.developmentSection}>
-        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Цепочка развития</p><h2>От стихии к очагу</h2></div>
+        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Цепочка развития</p><h2>{item.developmentTitle}</h2></div>
         <div className={styles.developmentTrack}>
           {item.development.map((entry, index) => (
             <article key={entry.label} className={index === 1 ? styles.currentStep : ""}>
@@ -105,10 +112,17 @@ export default async function InventionPage({ params }: { params: Promise<{ slug
       </section>
 
       <nav className={styles.bottomNav} aria-label="Навигация по Атласу">
-        <Link href="/#map"><span>Назад к ветви</span><strong>Огонь и тепло</strong></Link>
-        <div><span>Следующий узел</span><strong>Очаг</strong><small>Страница появится следующей</small></div>
+        {previousPage ? (
+          <Link href={`/inventions/${previousPage.slug}/`}><span>Предыдущий узел</span><strong>← {previousPage.title}</strong></Link>
+        ) : (
+          <Link href="/#map"><span>Назад к ветви</span><strong>← {branch.name}</strong></Link>
+        )}
+        {nextPage ? (
+          <Link href={`/inventions/${nextPage.slug}/`}><span>Следующий узел</span><strong>{nextPage.title} →</strong></Link>
+        ) : (
+          <div><span>Следующий узел</span><strong>{nextPlannedTitle ?? "Конец ветви"}</strong>{nextPlannedTitle && <small>Страница появится следующей</small>}</div>
+        )}
       </nav>
     </main>
   );
 }
-

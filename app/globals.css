@@ -297,6 +297,8 @@ main::before {
 .leaf-node i { color: var(--gold); opacity: 0; font-style: normal; transition: opacity .2s ease; }
 .leaf-node:hover { border-color: var(--gold); transform: translateY(-2px); }
 .leaf-node:hover i { opacity: 1; }
+.leaf-node.is-linked { cursor: pointer; }
+.leaf-node.is-linked::after { content: "Открыть"; grid-column: 2; align-self: end; color: var(--gold); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
 .future-note { margin: 24px 0 0; color: #656963; font-size: 12px; }
 .related-row { display: grid; grid-template-columns: 160px 1fr; gap: 0; margin-top: 45px; padding-top: 28px; border-top: 1px solid rgba(199,154,69,.16); }
 .related-row > span { color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }

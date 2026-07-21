@@ -123,17 +123,16 @@ const categories: Category[] = [
 ];
 
 const constellationPositions = [
-  { x: 356, y: 72 }, { x: 552, y: 155 }, { x: 640, y: 282 },
-  { x: 578, y: 462 }, { x: 414, y: 550 }, { x: 186, y: 518 },
-  { x: 86, y: 390 }, { x: 92, y: 238 }, { x: 186, y: 150 },
-  { x: 274, y: 223 }, { x: 453, y: 335 }, { x: 300, y: 407 },
+  { x: 360, y: 65 }, { x: 483, y: 98 }, { x: 572, y: 188 },
+  { x: 605, y: 310 }, { x: 572, y: 433 }, { x: 483, y: 522 },
+  { x: 360, y: 555 }, { x: 238, y: 522 }, { x: 148, y: 433 },
+  { x: 115, y: 310 }, { x: 148, y: 188 }, { x: 238, y: 98 },
 ];
 
-const constellationLinks = categories.flatMap((category, source) =>
-  category.related
-    .filter((target) => source < target)
-    .map((target) => ({ source, target })),
-);
+const constellationStarLinks = constellationPositions.map((_, source) => ({
+  source,
+  target: (source + 5) % constellationPositions.length,
+}));
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -213,26 +212,32 @@ export default function Home() {
 
         <div className="hero-constellation" aria-label="Интерактивная карта двенадцати областей изобретений">
           <svg className="constellation-lines" viewBox="0 0 720 620" aria-hidden="true">
-            <g className="orbit-rings"><circle cx="348" cy="310" r="94" /><circle cx="348" cy="310" r="192" /><circle cx="348" cy="310" r="276" /></g>
+            <g className="orbit-rings"><circle cx="360" cy="310" r="100" /><circle cx="360" cy="310" r="180" /><circle cx="360" cy="310" r="245" /></g>
+            <g className="network-paths network-star">
+              {constellationStarLinks.map(({ source, target }) => {
+                const from = constellationPositions[source];
+                const to = constellationPositions[target];
+                return <line key={`star-${source}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
+              })}
+            </g>
             <g className="network-paths network-spokes">
               {constellationPositions.map((position, index) => (
                 <line
                   key={`spoke-${index}`}
                   className={highlightedCategories.has(index) ? "is-highlighted" : "is-dimmed"}
-                  x1="348" y1="310" x2={position.x} y2={position.y}
+                  x1="360" y1="310" x2={position.x} y2={position.y}
                 />
               ))}
             </g>
             <g className="network-paths network-relations">
-              {constellationLinks.map(({ source, target }) => {
-                const from = constellationPositions[source];
+              {heroCategory.related.map((target) => {
+                const from = constellationPositions[heroCategoryIndex];
                 const to = constellationPositions[target];
-                const isHighlighted = source === heroCategoryIndex || target === heroCategoryIndex;
-                return <line key={`${source}-${target}`} className={isHighlighted ? "is-active" : "is-dimmed"} x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
+                return <line key={`relation-${heroCategoryIndex}-${target}`} className="is-active" x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
               })}
             </g>
           </svg>
-          <div className="constellation-core" aria-hidden="true"><span /></div>
+          <div className="constellation-core" aria-hidden="true"><span>А</span></div>
           <div className="constellation-nodes">
             {categories.map((category, index) => {
               const position = constellationPositions[index];

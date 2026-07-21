@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type Branch = { name: string; items: string[] };
 type Category = {
@@ -122,12 +122,30 @@ const categories: Category[] = [
   },
 ];
 
+const constellationPositions = [
+  { x: 356, y: 72 }, { x: 552, y: 155 }, { x: 640, y: 282 },
+  { x: 578, y: 462 }, { x: 414, y: 550 }, { x: 186, y: 518 },
+  { x: 86, y: 390 }, { x: 92, y: 238 }, { x: 186, y: 150 },
+  { x: 274, y: 223 }, { x: 453, y: 335 }, { x: 300, y: 407 },
+];
+
+const constellationLinks = categories.flatMap((category, source) =>
+  category.related
+    .filter((target) => source < target)
+    .map((target) => ({ source, target })),
+);
+
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [selectedBranch, setSelectedBranch] = useState(0);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [exploredCategory, setExploredCategory] = useState<number | null>(null);
+  const touchPreviewCategory = useRef<number | null>(null);
   const current = categories[selectedCategory];
+  const heroCategoryIndex = exploredCategory ?? selectedCategory;
+  const heroCategory = categories[heroCategoryIndex];
+  const highlightedCategories = new Set([heroCategoryIndex, ...heroCategory.related]);
 
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -142,6 +160,19 @@ export default function Home() {
   const goTo = (id: string) => {
     setMenuOpen(false);
     scrollTo(id);
+  };
+
+  const openConstellationCategory = (index: number) => {
+    const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+    if (isTouch && touchPreviewCategory.current !== index) {
+      touchPreviewCategory.current = index;
+      setExploredCategory(index);
+      return;
+    }
+
+    touchPreviewCategory.current = null;
+    openCategory(index);
   };
 
   return (
@@ -180,27 +211,58 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="hero-constellation" aria-label="Схематичная карта знаний: 12 областей, 48 ветвей и 192 узла">
+        <div className="hero-constellation" aria-label="Интерактивная карта двенадцати областей изобретений">
           <svg className="constellation-lines" viewBox="0 0 720 620" aria-hidden="true">
             <g className="orbit-rings"><circle cx="348" cy="310" r="94" /><circle cx="348" cy="310" r="192" /><circle cx="348" cy="310" r="276" /></g>
-            <g className="network-paths">
-              <path d="M348 310 C310 254 256 208 186 150" /><path d="M348 310 C353 233 350 169 356 72" />
-              <path d="M348 310 C407 257 464 216 552 155" /><path d="M348 310 C429 300 511 286 640 282" />
-              <path d="M348 310 C412 359 479 401 578 462" /><path d="M348 310 C370 388 389 456 414 550" />
-              <path d="M348 310 C296 383 252 438 186 518" /><path d="M348 310 C262 342 194 362 86 390" />
-              <path d="M348 310 C274 286 206 267 92 238" /><path d="M186 150 C241 124 297 100 356 72" />
-              <path d="M552 155 C580 198 611 239 640 282" /><path d="M186 518 C270 532 341 542 414 550" />
-              <path d="M92 238 C86 289 84 339 86 390" /><path d="M578 462 C526 502 472 531 414 550" />
+            <g className="network-paths network-spokes">
+              {constellationPositions.map((position, index) => (
+                <line
+                  key={`spoke-${index}`}
+                  className={highlightedCategories.has(index) ? "is-highlighted" : "is-dimmed"}
+                  x1="348" y1="310" x2={position.x} y2={position.y}
+                />
+              ))}
             </g>
-            <g className="network-nodes">
-              <circle className="origin-node" cx="348" cy="310" r="10" />
-              <circle cx="186" cy="150" r="6" /><circle cx="356" cy="72" r="6" /><circle cx="552" cy="155" r="6" />
-              <circle cx="640" cy="282" r="6" /><circle cx="578" cy="462" r="6" /><circle cx="414" cy="550" r="6" />
-              <circle cx="186" cy="518" r="6" /><circle cx="86" cy="390" r="6" /><circle cx="92" cy="238" r="6" />
-              <circle cx="274" cy="223" r="4" /><circle cx="453" cy="335" r="4" /><circle cx="300" cy="407" r="4" />
+            <g className="network-paths network-relations">
+              {constellationLinks.map(({ source, target }) => {
+                const from = constellationPositions[source];
+                const to = constellationPositions[target];
+                const isHighlighted = source === heroCategoryIndex || target === heroCategoryIndex;
+                return <line key={`${source}-${target}`} className={isHighlighted ? "is-active" : "is-dimmed"} x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
+              })}
             </g>
           </svg>
           <div className="constellation-core" aria-hidden="true"><span /></div>
+          <div className="constellation-nodes">
+            {categories.map((category, index) => {
+              const position = constellationPositions[index];
+              const isActive = index === heroCategoryIndex;
+              const isRelated = heroCategory.related.includes(index);
+              return (
+                <button
+                  className={`constellation-node ${isActive ? "is-active" : ""} ${isRelated ? "is-related" : ""} ${!highlightedCategories.has(index) ? "is-dimmed" : ""}`}
+                  style={{ left: `${(position.x / 720) * 100}%`, top: `${(position.y / 620) * 100}%` }}
+                  type="button"
+                  key={category.number}
+                  aria-label={`${category.number} — ${category.title}. Перейти к категории`}
+                  aria-pressed={isActive}
+                  onMouseEnter={() => setExploredCategory(index)}
+                  onMouseLeave={() => setExploredCategory(null)}
+                  onFocus={() => setExploredCategory(index)}
+                  onBlur={() => setExploredCategory(null)}
+                  onClick={() => openConstellationCategory(index)}
+                >
+                  <span className="constellation-node-core" aria-hidden="true">{category.symbol}</span>
+                  <span className="constellation-node-label"><b>{category.number}</b>{category.title}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="constellation-caption" aria-live="polite">
+            <span>{heroCategory.number}</span>
+            <strong>{heroCategory.title}</strong>
+            <small>Связанных областей: {heroCategory.related.length}</small>
+          </div>
           <div className="atlas-stats">
             <span><b>12</b> областей</span><span><b>48</b> ветвей</span><span><b>192</b> узла</span>
           </div>

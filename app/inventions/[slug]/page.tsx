@@ -81,7 +81,7 @@ export default async function InventionPage({ params }: { params: Promise<{ slug
       </section>
 
       <section className={styles.evidenceSection}>
-        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Археологические свидетельства</p><h2>{item.evidenceTitle}</h2></div>
+        <div className={styles.sectionTitle}><p className={styles.eyebrow}>Исторические вехи</p><h2>{item.evidenceTitle}</h2></div>
         <div className={styles.timeline}>
           {item.evidence.map((entry) => (
             <article key={entry.title}><time>{entry.date}</time><div><h3>{entry.title}</h3><p>{entry.text}</p></div></article>

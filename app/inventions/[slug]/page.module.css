@@ -5,8 +5,11 @@
   --muted: #969892;
   --gold: #c79a45;
   --amber: #edae3d;
+  width: 100%;
   min-height: 100vh;
-  overflow: hidden;
+  min-height: 100svh;
+  overflow-x: clip;
+  overflow-y: visible;
   background:
     radial-gradient(circle at 78% 12%, rgba(237,174,61,.1), transparent 24%),
     linear-gradient(rgba(199,154,69,.032) 1px, transparent 1px),
@@ -21,7 +24,7 @@
 .backLink { min-height: 44px; display: flex; align-items: center; color: var(--gold); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
 
 .hero { min-height: calc(100vh - 86px); display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(350px, .85fr); grid-template-rows: 1fr auto; gap: 20px 6vw; align-items: center; padding: 72px 7vw 54px; }
-.heroCopy { max-width: 860px; }
+.heroCopy { min-width: 0; max-width: 860px; }
 .breadcrumbs { margin: 0 0 48px; color: #696d68; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
 .breadcrumbs i { margin: 0 10px; color: rgba(199,154,69,.45); font-style: normal; }
 .eyebrow { margin: 0 0 20px; color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
@@ -75,7 +78,7 @@
 .sourceList a { min-height: 90px; display: grid; grid-template-columns: 50px 1fr 220px 20px; align-items: center; gap: 18px; border-bottom: 1px solid rgba(199,154,69,.18); transition: color .2s ease, background .2s ease; }
 .sourceList a:hover { background: rgba(237,174,61,.04); color: var(--amber); }
 .sourceList span { color: var(--gold); font: 14px Georgia, serif; }
-.sourceList strong { font-size: 14px; font-weight: 500; }
+.sourceList strong { min-width: 0; overflow-wrap: anywhere; font-size: 14px; font-weight: 500; }
 .sourceList small { color: var(--muted); }
 .sourceList i { color: var(--gold); font-style: normal; }
 
@@ -83,7 +86,7 @@
 .bottomNav > * { min-height: 170px; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 35px 7vw; border-right: 1px solid rgba(199,154,69,.18); }
 .bottomNav > *:last-child { border-right: 0; }
 .bottomNav span, .bottomNav small { color: var(--muted); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
-.bottomNav strong { font: 400 28px Georgia, serif; }
+.bottomNav strong { overflow-wrap: anywhere; font: 400 28px Georgia, serif; }
 .bottomNav a:hover strong { color: var(--amber); }
 
 @media (max-width: 850px) {
@@ -94,7 +97,7 @@
   .breadcrumbs { margin-bottom: 32px; line-height: 1.7; }
   .hero h1 { font-size: clamp(58px, 18vw, 86px); }
   .lead { margin-top: 28px; font-size: 18px; }
-  .fireMark { grid-row: 2; width: min(92vw, 390px); margin: 30px auto; }
+  .fireMark { grid-row: 2; width: min(100%, 390px); margin: 30px auto; }
   .facts { grid-column: auto; grid-template-columns: 1fr; }
   .facts div { min-height: 88px; padding: 20px 0; border-right: 0; border-bottom: 1px solid rgba(199,154,69,.16); }
   .facts div:last-child { border-bottom: 0; }

@@ -125,16 +125,18 @@ main::before {
   background: radial-gradient(circle, rgba(237,174,61,.085), rgba(237,174,61,.018) 32%, transparent 67%);
 }
 .constellation-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.orbit-rings circle { fill: none; stroke: rgba(199,154,69,.13); stroke-width: 1; stroke-dasharray: 2 8; transform-origin: 348px 310px; animation: orbit 34s linear infinite; }
+.orbit-rings circle { fill: none; stroke: rgba(199,154,69,.13); stroke-width: 1; stroke-dasharray: 2 8; transform-origin: 360px 310px; animation: orbit 34s linear infinite; }
 .orbit-rings circle:nth-child(2) { animation-direction: reverse; animation-duration: 46s; }
 .orbit-rings circle:nth-child(3) { animation-duration: 60s; }
 .network-paths line { stroke: rgba(199,154,69,.28); stroke-width: 1; vector-effect: non-scaling-stroke; transition: opacity .3s ease, stroke .3s ease, stroke-width .3s ease; }
+.network-star line { stroke: rgba(199,154,69,.18); stroke-width: .8; }
 .network-spokes line { stroke-dasharray: 900; animation: draw 1.55s ease-out both; }
 .network-paths .is-highlighted { stroke: rgba(237,174,61,.48); }
 .network-paths .is-active { stroke: var(--amber); stroke-width: 1.7; filter: drop-shadow(0 0 5px rgba(237,174,61,.62)); }
 .network-paths .is-dimmed { opacity: .12; }
-.constellation-core { position: absolute; left: 48.35%; top: 49.2%; width: 34px; height: 34px; display: grid; place-items: center; transform: translate(-50%, -50%); border: 1px solid rgba(237,174,61,.45); border-radius: 50%; box-shadow: 0 0 0 12px rgba(237,174,61,.035), 0 0 40px rgba(237,174,61,.32); }
-.constellation-core span { width: 7px; height: 7px; border-radius: 50%; background: var(--paper); box-shadow: 0 0 12px var(--amber); }
+.constellation-core { position: absolute; left: 50%; top: 50%; z-index: 3; width: 50px; height: 50px; display: grid; place-items: center; transform: translate(-50%, -50%); border: 1px solid rgba(237,174,61,.62); border-radius: 50%; background: rgba(9,11,12,.82); box-shadow: 0 0 0 12px rgba(237,174,61,.035), 0 0 0 28px rgba(237,174,61,.018), 0 0 44px rgba(237,174,61,.38); }
+.constellation-core::before { content: ""; position: absolute; inset: 7px; border: 1px dotted rgba(237,174,61,.48); border-radius: 50%; animation: orbit 12s linear infinite; }
+.constellation-core span { position: relative; color: var(--paper); font: 16px Georgia, serif; text-shadow: 0 0 12px var(--amber); }
 .constellation-nodes { position: absolute; inset: 0; }
 .constellation-node {
   position: absolute;
@@ -391,7 +393,8 @@ footer button { border: 0; background: transparent; color: var(--gold); cursor: 
   .subtitle { max-width: 310px; margin-top: 25px; font-size: 17px; line-height: 1.45; }
   .start-button { min-height: 48px; margin-top: 38px; gap: 13px; font-size: 10px; }
   .hero-constellation { min-height: 300px; margin: 24px -10px 0; }
-  .constellation-core { left: 48.35%; top: 49.2%; }
+  .constellation-core { left: 50%; top: 50%; width: 42px; height: 42px; }
+  .constellation-core span { font-size: 13px; }
   .constellation-node { width: 44px; height: 44px; }
   .constellation-node-core { width: 14px; height: 14px; }
   .constellation-node.is-active .constellation-node-core { width: 27px; height: 27px; font-size: 13px; }

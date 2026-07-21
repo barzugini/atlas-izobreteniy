@@ -126,6 +126,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [selectedBranch, setSelectedBranch] = useState(0);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const current = categories[selectedCategory];
 
   const scrollTo = (id: string) =>
@@ -134,7 +135,13 @@ export default function Home() {
   const openCategory = (index: number) => {
     setSelectedCategory(index);
     setSelectedBranch(0);
+    setMenuOpen(false);
     window.setTimeout(() => scrollTo("map"), 40);
+  };
+
+  const goTo = (id: string) => {
+    setMenuOpen(false);
+    scrollTo(id);
   };
 
   return (
@@ -146,6 +153,21 @@ export default function Home() {
           <a href="#map">Карта знаний</a>
         </nav>
         <button className="about-button" type="button" onClick={() => setAboutOpen(true)}>О проекте</button>
+        <button
+          className={`menu-button ${menuOpen ? "is-open" : ""}`}
+          type="button"
+          aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span /><span />
+        </button>
+        <div className={`mobile-menu ${menuOpen ? "is-open" : ""}`} id="mobile-menu" aria-hidden={!menuOpen}>
+          <button type="button" onClick={() => goTo("categories")}><span>01</span>Категории</button>
+          <button type="button" onClick={() => goTo("map")}><span>02</span>Карта знаний</button>
+          <button type="button" onClick={() => { setMenuOpen(false); setAboutOpen(true); }}><span>03</span>О проекте</button>
+        </div>
       </header>
 
       <section className="hero" id="top">
@@ -153,7 +175,7 @@ export default function Home() {
           <p className="eyebrow">История человеческой мысли</p>
           <h1>Атлас<br />изобретений</h1>
           <p className="subtitle">Путь от первого огня до искусственного интеллекта</p>
-          <button className="start-button" type="button" onClick={() => scrollTo("categories")}>
+          <button className="start-button" type="button" onClick={() => goTo("categories")}>
             <span className="start-node" /> Начать исследование <span aria-hidden="true">→</span>
           </button>
         </div>

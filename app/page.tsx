@@ -129,10 +129,11 @@ const constellationPositions = [
   { x: 115, y: 310 }, { x: 148, y: 188 }, { x: 238, y: 98 },
 ];
 
-const constellationStarLinks = constellationPositions.map((_, source) => ({
-  source,
-  target: (source + 5) % constellationPositions.length,
-}));
+const constellationStarPoints = Array.from({ length: 24 }, (_, index) => {
+  const angle = (-90 + index * 15) * (Math.PI / 180);
+  const radius = index % 2 === 0 ? 245 : 148;
+  return `${360 + Math.cos(angle) * radius},${310 + Math.sin(angle) * radius}`;
+}).join(" ");
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -213,29 +214,8 @@ export default function Home() {
         <div className="hero-constellation" aria-label="Интерактивная карта двенадцати областей изобретений">
           <svg className="constellation-lines" viewBox="0 0 720 620" aria-hidden="true">
             <g className="orbit-rings"><circle cx="360" cy="310" r="100" /><circle cx="360" cy="310" r="180" /><circle cx="360" cy="310" r="245" /></g>
-            <g className="network-paths network-star">
-              {constellationStarLinks.map(({ source, target }) => {
-                const from = constellationPositions[source];
-                const to = constellationPositions[target];
-                return <line key={`star-${source}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
-              })}
-            </g>
-            <g className="network-paths network-spokes">
-              {constellationPositions.map((position, index) => (
-                <line
-                  key={`spoke-${index}`}
-                  className={highlightedCategories.has(index) ? "is-highlighted" : "is-dimmed"}
-                  x1="360" y1="310" x2={position.x} y2={position.y}
-                />
-              ))}
-            </g>
-            <g className="network-paths network-relations">
-              {heroCategory.related.map((target) => {
-                const from = constellationPositions[heroCategoryIndex];
-                const to = constellationPositions[target];
-                return <line key={`relation-${heroCategoryIndex}-${target}`} className="is-active" x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
-              })}
-            </g>
+            <polygon className="star-outline" points={constellationStarPoints} />
+            <circle className="star-center-ring" cx="360" cy="310" r="62" />
           </svg>
           <div className="constellation-core" aria-hidden="true"><span>А</span></div>
           <div className="constellation-nodes">
